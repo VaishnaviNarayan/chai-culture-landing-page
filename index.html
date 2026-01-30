@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chai Culture - Coming Soon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(to right, #3e1f0d, #6f3b1e);
+  color: #fff;
+  text-align: center;
+  padding: 50px;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: rgba(0,0,0,0.4);
+  padding: 30px;
+  border-radius: 12px;
+}
+
+h1 { color: gold; }
+input {
+  padding: 10px;
+  width: 80%;
+  border-radius: 5px;
+  border: none;
+}
+button {
+  padding: 10px 20px;
+  background: gold;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover { background: white; }
+
+.social a {
+  color: gold;
+  margin: 10px;
+  font-size: 20px;
+  text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Chai Culture</h1>
+<h3>Brew the Royal Tradition</h3>
+
+<p>Premium instant chai tea premix inspired by royal Indian households.  
+Launching soon with elegance, heritage, and authenticity.</p>
+
+<h2>🚀 Launching Soon</h2>
+
+<input type="email" id="email" placeholder="Enter your email">
+<br><br>
+<button id="notifyBtn">Notify Me</button>
+
+<p id="msg"></p>
+
+<div class="social">
+<a href="#">Instagram</a>
+<a href="#">Facebook</a>
+<a href="#">Twitter</a>
+</div>
+
+</div>
+
+<script>
+document.getElementById('notifyBtn').addEventListener('click', sendEmail);
+
+function validateEmail(email) {
+  // simple RFC-like check (not exhaustive)
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+function setMessage(text, isError) {
+  const el = document.getElementById('msg');
+  el.style.color = isError ? '#ffdddd' : '#ddffdd';
+  el.textContent = text;
+}
+
+function sendEmail() {
+  const emailInput = document.getElementById('email');
+  const btn = document.getElementById('notifyBtn');
+  const email = emailInput.value.trim();
+
+  if (!email) {
+    setMessage('Please enter your email.', true);
+    return;
+  }
+  if (!validateEmail(email)) {
+    setMessage('Please enter a valid email address.', true);
+    return;
+  }
+
+  btn.disabled = true;
+  const prevText = btn.textContent;
+  btn.textContent = 'Sending...';
+  setMessage('', false);
+
+  fetch('/save', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({email: email})
+  })
+  .then(res => res.json())
+  .then(data => {
+    setMessage('Thank you! We will notify you.');
+    emailInput.value = '';
+  })
+  .catch(err => {
+    console.error(err);
+    setMessage('Oops — something went wrong. Please try again.', true);
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.textContent = prevText;
+  });
+}
+</script>
+
+</body>
+</html>
